@@ -1,9 +1,10 @@
 package com.example.springbootstarter.service;
 
+import com.example.springbootstarter.jwt.JwtAuthenticationManager;
 import com.example.springbootstarter.dto.request.LoginRequest;
 import com.example.springbootstarter.dto.request.RegisterRequest;
 import com.example.springbootstarter.dto.response.JwtAuthenticationResponse;
-import com.example.springbootstarter.jwt.JwtManager;
+import com.example.springbootstarter.jwt.JwtGenerator;
 import com.example.springbootstarter.model.Role;
 import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.UserRepository;
@@ -19,7 +20,8 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtManager jwtManager;
+    private final JwtGenerator jwtGenerator;
+    private final JwtAuthenticationManager authenticationManager;
 
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username).orElseThrow(
@@ -37,7 +39,7 @@ public class AuthenticationService {
                     .build();
             userRepository.save(user);
 
-            String token = jwtManager.generateToken(user.getUsername());
+            String token = jwtGenerator.generateToken(user.getUsername());
             return new JwtAuthenticationResponse(token);
         }
         catch(Exception e) {
@@ -56,7 +58,11 @@ public class AuthenticationService {
             throw new BadCredentialsException("Invalid password");
         }
 
-        String token = jwtManager.generateToken(user.getUsername());
+        String token = jwtGenerator.generateToken(user.getUsername());
         return new JwtAuthenticationResponse(token);
+    }
+
+    public User authenticate() {
+        return authenticationManager.getAuthenticatedUser();
     }
 }

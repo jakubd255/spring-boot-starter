@@ -11,12 +11,11 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.function.Function;
 
 
 @Component
-public class JwtManager {
+public class JwtGenerator {
     @Value("${token.secret.key}")
     private String jwtSecretKey;
 
@@ -31,7 +30,6 @@ public class JwtManager {
         jwtBuilder
                 .setIssuedAt(currectDate)
                 .setExpiration(expirationDate)
-                .setClaims(new HashMap<>())
                 .setSubject(username)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256);
 
@@ -42,9 +40,17 @@ public class JwtManager {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
     public boolean isTokenValid(String token, String username) {
         final String extractedUsername = extractUsername(token);
-        return extractedUsername.equals(username);
+        return extractedUsername.equals(username) && !isTokenExpired(token);
+    }
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {

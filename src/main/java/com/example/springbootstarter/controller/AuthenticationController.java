@@ -26,4 +26,9 @@ public class AuthenticationController {
         JwtAuthenticationResponse token = authenticationService.logIn(loginRequest);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
+
+    @GetMapping("/authenticate")
+    public ResponseEntity<?> authenticate() {
+        return new ResponseEntity<>(authenticationService.authenticate(), HttpStatus.OK);
+    }
 }
