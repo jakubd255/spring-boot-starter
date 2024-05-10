@@ -2,11 +2,15 @@ package com.example.springbootstarter.service;
 
 import com.example.springbootstarter.dto.request.LoginRequest;
 import com.example.springbootstarter.dto.request.RegisterRequest;
+import com.example.springbootstarter.dto.response.JwtAuthenticationResponse;
+import com.example.springbootstarter.jwt.JwtManager;
 import com.example.springbootstarter.model.Role;
 import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +19,15 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtManager jwtManager;
 
-    public User register(RegisterRequest request) {
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+    }
+
+    public JwtAuthenticationResponse register(RegisterRequest request) {
         try {
             User user = User.builder()
                     .fullName(request.getFullName())
@@ -24,14 +35,17 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.ROLE_USER)
                     .build();
-            return userRepository.save(user);
+            userRepository.save(user);
+
+            String token = jwtManager.generateToken(user.getUsername());
+            return new JwtAuthenticationResponse(token);
         }
         catch(Exception e) {
             throw new BadCredentialsException("Email is taken");
         }
     }
 
-    public User logIn(LoginRequest request) {
+    public JwtAuthenticationResponse logIn(LoginRequest request) {
         //Does user exist?
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("Invalid email")
@@ -42,6 +56,7 @@ public class AuthenticationService {
             throw new BadCredentialsException("Invalid password");
         }
 
-        return user;
+        String token = jwtManager.generateToken(user.getUsername());
+        return new JwtAuthenticationResponse(token);
     }
 }
