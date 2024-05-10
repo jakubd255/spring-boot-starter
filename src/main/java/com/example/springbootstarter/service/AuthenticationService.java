@@ -1,5 +1,7 @@
 package com.example.springbootstarter.service;
 
+import com.example.springbootstarter.dto.DtoConverter;
+import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.jwt.JwtAuthenticationManager;
 import com.example.springbootstarter.dto.request.LoginRequest;
 import com.example.springbootstarter.dto.request.RegisterRequest;
@@ -62,7 +64,9 @@ public class AuthenticationService {
         return new JwtAuthenticationResponse(token);
     }
 
-    public User authenticate() {
-        return authenticationManager.getAuthenticatedUser();
+    public UserDto authenticate() {
+        return DtoConverter.convertUserToDto(
+                authenticationManager.getAuthenticatedUser()
+        );
     }
 }

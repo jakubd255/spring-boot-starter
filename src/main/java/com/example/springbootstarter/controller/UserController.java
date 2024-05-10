@@ -1,6 +1,6 @@
 package com.example.springbootstarter.controller;
 
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -21,8 +21,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll() {
-        List<User> users = userService.findAll();
+    public ResponseEntity<List<UserDto>> findAll() {
+        List<UserDto> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -32,8 +32,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable Integer id) {
-        User user = userService.findById(id);
+    public ResponseEntity<UserDto> findById(@PathVariable Integer id) {
+        UserDto user = userService.findById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
