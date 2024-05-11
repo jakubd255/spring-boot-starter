@@ -5,7 +5,7 @@ import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.jwt.JwtAuthenticationManager;
 import com.example.springbootstarter.dto.request.LoginRequest;
 import com.example.springbootstarter.dto.request.RegisterRequest;
-import com.example.springbootstarter.dto.response.JwtAuthenticationResponse;
+import com.example.springbootstarter.dto.response.JwtResponse;
 import com.example.springbootstarter.jwt.JwtGenerator;
 import com.example.springbootstarter.model.Role;
 import com.example.springbootstarter.model.User;
@@ -31,7 +31,7 @@ public class AuthenticationService {
         );
     }
 
-    public JwtAuthenticationResponse register(RegisterRequest request) {
+    public JwtResponse register(RegisterRequest request) {
         try {
             User user = User.builder()
                     .fullName(request.getFullName())
@@ -42,14 +42,14 @@ public class AuthenticationService {
             userRepository.save(user);
 
             String token = jwtGenerator.generateToken(user.getUsername());
-            return new JwtAuthenticationResponse(token);
+            return new JwtResponse(token);
         }
         catch(Exception e) {
             throw new BadCredentialsException("Email is taken");
         }
     }
 
-    public JwtAuthenticationResponse logIn(LoginRequest request) {
+    public JwtResponse logIn(LoginRequest request) {
         //Does user exist?
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("Invalid email")
@@ -61,7 +61,7 @@ public class AuthenticationService {
         }
 
         String token = jwtGenerator.generateToken(user.getUsername());
-        return new JwtAuthenticationResponse(token);
+        return new JwtResponse(token);
     }
 
     public UserDto authenticate() {

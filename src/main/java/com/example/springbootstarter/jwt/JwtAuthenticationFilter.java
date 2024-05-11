@@ -1,5 +1,6 @@
 package com.example.springbootstarter.jwt;
 
+import com.example.springbootstarter.cookie.CookieManager;
 import com.example.springbootstarter.service.AuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -21,10 +22,10 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter implements JwtExtractor {
     private final JwtGenerator jwtManager;
     private final AuthenticationService authenticationService;
-
+    private final CookieManager cookieManager;
 
     @Override
     protected void doFilterInternal(
@@ -35,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String token;
         final String email;
 
-        token = getAccessTokenFromHeader(request);
+        token = extractJwt(request);
         if(token == null) {
             filterChain.doFilter(request, response);
             return;
@@ -47,11 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         catch (ExpiredJwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("JWT expired");
+            cookieManager.removeCookies(response);
             return;
         }
         catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid JWT");
+            cookieManager.removeCookies(response);
             return;
         }
 
@@ -69,11 +72,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-    }
-
-    private String getAccessTokenFromHeader(HttpServletRequest request) {
-        final String authHeader = request.getHeader("Authorization");
-
-        return (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null;
     }
 }
