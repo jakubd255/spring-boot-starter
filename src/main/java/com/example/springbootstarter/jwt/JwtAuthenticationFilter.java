@@ -1,6 +1,9 @@
 package com.example.springbootstarter.jwt;
 
 import com.example.springbootstarter.service.AuthenticationService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -39,7 +41,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        email = jwtManager.extractUsername(token);
+        try {
+            email = jwtManager.extractUsername(token);
+        }
+        catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("JWT expired");
+            return;
+        }
+        catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid JWT");
+            return;
+        }
 
         if(!email.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = authenticationService.userDetailsService().loadUserByUsername(email);
@@ -60,10 +74,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getAccessTokenFromHeader(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
 
-        if(authHeader == null || authHeader.isEmpty() || !StringUtils.startsWithIgnoreCase(authHeader, "Bearer ")) {
-            return null;
-        }
-
-        return authHeader.substring(7);
+        return (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null;
     }
 }
