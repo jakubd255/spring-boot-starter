@@ -37,4 +37,4 @@ The authentication token can be provided through the request header using the Be
 - **GET: /api/users/csv**
   - Download list of users in csv file
 - **GET: /api/users/:id**
-  - Retrieve chosen user by their id
+  - Retrieve chosen user by id
