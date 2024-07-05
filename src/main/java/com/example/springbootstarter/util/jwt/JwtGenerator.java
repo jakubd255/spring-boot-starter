@@ -1,4 +1,4 @@
-package com.example.springbootstarter.jwt;
+package com.example.springbootstarter.util.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;

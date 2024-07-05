@@ -2,11 +2,11 @@ package com.example.springbootstarter.service;
 
 import com.example.springbootstarter.dto.DtoConverter;
 import com.example.springbootstarter.dto.response.UserDto;
-import com.example.springbootstarter.jwt.JwtAuthenticationManager;
+import com.example.springbootstarter.util.jwt.JwtAuthenticationManager;
 import com.example.springbootstarter.dto.request.LoginRequest;
 import com.example.springbootstarter.dto.request.RegisterRequest;
 import com.example.springbootstarter.dto.response.JwtResponse;
-import com.example.springbootstarter.jwt.JwtGenerator;
+import com.example.springbootstarter.util.jwt.JwtGenerator;
 import com.example.springbootstarter.model.Role;
 import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.UserRepository;

@@ -1,6 +1,6 @@
 package com.example.springbootstarter.service;
 
-import com.example.springbootstarter.csv.UserCsvExporter;
+import com.example.springbootstarter.util.csv.UserCsvExporter;
 import com.example.springbootstarter.dto.DtoConverter;
 import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.dto.response.UserExtendedDto;

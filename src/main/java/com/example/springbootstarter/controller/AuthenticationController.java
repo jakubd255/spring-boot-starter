@@ -1,6 +1,6 @@
 package com.example.springbootstarter.controller;
 
-import com.example.springbootstarter.cookie.CookieManager;
+import com.example.springbootstarter.util.cookie.CookieManager;
 import com.example.springbootstarter.dto.request.LoginRequest;
 import com.example.springbootstarter.dto.request.RegisterRequest;
 import com.example.springbootstarter.dto.response.JwtResponse;

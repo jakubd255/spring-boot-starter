@@ -1,6 +1,6 @@
 package com.example.springbootstarter;
 
-import com.example.springbootstarter.jwt.JwtGenerator;
+import com.example.springbootstarter.util.jwt.JwtGenerator;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.junit.jupiter.api.Assertions;

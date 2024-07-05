@@ -1,4 +1,4 @@
-package com.example.springbootstarter.jwt;
+package com.example.springbootstarter.util.jwt;
 
 import com.example.springbootstarter.model.User;
 import org.springframework.security.core.Authentication;

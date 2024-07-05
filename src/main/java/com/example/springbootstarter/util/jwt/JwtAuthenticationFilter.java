@@ -1,6 +1,6 @@
-package com.example.springbootstarter.jwt;
+package com.example.springbootstarter.util.jwt;
 
-import com.example.springbootstarter.cookie.CookieManager;
+import com.example.springbootstarter.util.cookie.CookieManager;
 import com.example.springbootstarter.service.AuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

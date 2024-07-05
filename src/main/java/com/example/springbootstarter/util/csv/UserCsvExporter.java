@@ -1,4 +1,4 @@
-package com.example.springbootstarter.csv;
+package com.example.springbootstarter.util.csv;
 
 import com.example.springbootstarter.model.User;
 import com.opencsv.CSVWriter;

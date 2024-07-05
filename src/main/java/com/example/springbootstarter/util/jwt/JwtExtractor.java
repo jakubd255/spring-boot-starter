@@ -1,4 +1,4 @@
-package com.example.springbootstarter.jwt;
+package com.example.springbootstarter.util.jwt;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

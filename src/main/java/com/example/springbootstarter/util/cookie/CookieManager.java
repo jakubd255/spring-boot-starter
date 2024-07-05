@@ -1,4 +1,4 @@
-package com.example.springbootstarter.cookie;
+package com.example.springbootstarter.util.cookie;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
