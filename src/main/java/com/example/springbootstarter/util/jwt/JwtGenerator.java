@@ -23,12 +23,12 @@ public class JwtGenerator {
     private int jwtExpirationTime;
 
     public String generateToken(String username) {
-        Date currectDate = new Date();
-        Date expirationDate = new Date(currectDate.getTime()+jwtExpirationTime);
+        Date currentDate = new Date();
+        Date expirationDate = new Date(currentDate.getTime()+jwtExpirationTime);
 
         JwtBuilder jwtBuilder = Jwts.builder();
         jwtBuilder
-                .setIssuedAt(currectDate)
+                .setIssuedAt(currentDate)
                 .setExpiration(expirationDate)
                 .setSubject(username)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256);

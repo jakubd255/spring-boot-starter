@@ -23,7 +23,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter implements JwtExtractor {
-    private final JwtGenerator jwtManager;
+    private final JwtGenerator jwtGenerator;
     private final AuthenticationService authenticationService;
     private final CookieManager cookieManager;
 
@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Jwt
         }
 
         try {
-            email = jwtManager.extractUsername(token);
+            email = jwtGenerator.extractUsername(token);
         }
         catch (ExpiredJwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Jwt
         if(!email.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = authenticationService.userDetailsService().loadUserByUsername(email);
 
-            if(jwtManager.isTokenValid(token, userDetails.getUsername())) {
+            if(jwtGenerator.isTokenValid(token, userDetails.getUsername())) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
