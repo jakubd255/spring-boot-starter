@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 /src/main/resources/db
 .DS_Store
+/uploads
 
 
 ### STS ###

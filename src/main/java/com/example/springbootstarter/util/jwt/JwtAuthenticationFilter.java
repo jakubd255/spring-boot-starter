@@ -22,8 +22,9 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter implements JwtExtractor {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtGenerator jwtGenerator;
+    private final JwtExtractor jwtExtractor;
     private final AuthenticationService authenticationService;
     private final CookieManager cookieManager;
 
@@ -36,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Jwt
         final String token;
         final String email;
 
-        token = extractJwt(request);
+        token = jwtExtractor.extractJwt(request);
         if(token == null) {
             filterChain.doFilter(request, response);
             return;

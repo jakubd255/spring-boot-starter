@@ -2,8 +2,10 @@ package com.example.springbootstarter.util.jwt;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 
-public interface JwtExtractor {
+@Component
+public class JwtExtractor {
     private String extractAccessTokenFromHeader(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
 
@@ -22,7 +24,7 @@ public interface JwtExtractor {
         return null;
     }
 
-    default String extractJwt(HttpServletRequest request) {
+    public String extractJwt(HttpServletRequest request) {
         String jwtHeader = extractAccessTokenFromHeader(request);
         String jwtCookie = extractAccessTokenFromCookie(request);
 
