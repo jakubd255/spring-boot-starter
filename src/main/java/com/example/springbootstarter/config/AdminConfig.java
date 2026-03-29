@@ -5,6 +5,7 @@ import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +15,16 @@ public class AdminConfig {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${admin.password}")
+    private String adminPassword;
+
     @PostConstruct
     public void initialize() {
         if(userRepository.countByRole(Role.ROLE_ADMIN) == 0) {
             User admin = User.builder()
                     .fullName("Admin")
                     .email("admin@admin.com")
-                    .password(passwordEncoder.encode("12345678"))
+                    .password(passwordEncoder.encode(adminPassword))
                     .role(Role.ROLE_ADMIN)
                     .build();
 

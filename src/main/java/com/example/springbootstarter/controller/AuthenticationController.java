@@ -7,6 +7,7 @@ import com.example.springbootstarter.dto.response.JwtResponse;
 import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,14 @@ public class AuthenticationController {
     private final CookieManager cookieManager;
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request, HttpServletResponse response) {
+    public ResponseEntity<JwtResponse> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response) {
         JwtResponse token = authenticationService.register(request);
         cookieManager.addCookie(response, token.token());
         return new ResponseEntity<>(token, HttpStatus.CREATED);
     }
 
     @PostMapping("/log-in")
-    public ResponseEntity<JwtResponse> logIn(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<JwtResponse> logIn(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         JwtResponse token = authenticationService.logIn(request);
         cookieManager.addCookie(response, token.token());
         return new ResponseEntity<>(token, HttpStatus.OK);

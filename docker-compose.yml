@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  app:
+    image: spring-boot-starter
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/spring_boot_starter
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - TOKEN_SECRET=${TOKEN_SECRET}
+    volumes:
+      - spring-boot-starter-volume:/app/uploads
+    container_name: spring-boot-starter
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: spring_boot_starter
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+volumes:
+  spring-boot-starter-volume:
+    name: spring-boot-starter-volume
+  postgres-volume:
+    name: spring-boot-starter-db-volume

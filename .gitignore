@@ -6,6 +6,7 @@ target/
 /src/main/resources/db
 .DS_Store
 /uploads
+.env
 
 
 ### STS ###

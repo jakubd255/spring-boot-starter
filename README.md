@@ -4,7 +4,6 @@ It uses Spring Security for authentication, with JWT (JSON Web Token) and BCrypt
 The authentication token can be provided through the request header using the Bearer token format or HTTP-only cookie.  
 Additionally, it is possible to upload and download files.
 
-
 ## Features
 - Spring Security
 - JWT Authentication
@@ -12,12 +11,11 @@ Additionally, it is possible to upload and download files.
 - HTTP-Only Cookies
 - File upload and download
 
-
 ## Endpoints
 ### POST: /api/register
 ```json
 {
-  "fullname": "Example User",
+  "fullName": "Example User",
   "email": "example@gmail.com",
   "password": "12345678"
 }
@@ -56,3 +54,18 @@ Additionally, it is possible to upload and download files.
 
 ### DELETE: /api/files/:name
 - Delete chosen file by name
+
+## Run with Docker
+1. Set up environment variables in `.env` file (check `.env.example`)
+2. Build app
+```shell
+mvn clean package
+```
+3. Build Docker image
+```shell
+docker build -t spring-boot-starter .
+```
+4. Create container with Docker Compose
+```shell
+docker-compose --env-file .env up --build
+```
