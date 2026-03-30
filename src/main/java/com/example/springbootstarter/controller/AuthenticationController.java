@@ -1,9 +1,7 @@
 package com.example.springbootstarter.controller;
 
-import com.example.springbootstarter.util.cookie.CookieManager;
-import com.example.springbootstarter.dto.request.LoginRequest;
-import com.example.springbootstarter.dto.request.RegisterRequest;
-import com.example.springbootstarter.dto.response.JwtResponse;
+import com.example.springbootstarter.dto.request.*;
+import com.example.springbootstarter.util.CookieManager;
 import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,33 +13,59 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final CookieManager cookieManager;
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response) {
-        JwtResponse token = authenticationService.register(request);
-        cookieManager.addCookie(response, token.token());
-        return new ResponseEntity<>(token, HttpStatus.CREATED);
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
+        authenticationService.register(request);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/log-in")
-    public ResponseEntity<JwtResponse> logIn(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
-        JwtResponse token = authenticationService.logIn(request);
-        cookieManager.addCookie(response, token.token());
-        return new ResponseEntity<>(token, HttpStatus.OK);
+    public ResponseEntity<String> logIn(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+        String sessionId = authenticationService.logIn(request);
+        cookieManager.addCookie(response, sessionId);
+        return ResponseEntity.ok(sessionId);
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+        String sessionId = authenticationService.verifyEmail(token);
+        return ResponseEntity.ok(sessionId);
     }
 
     @GetMapping("/authenticate")
     public ResponseEntity<UserDto> authenticate() {
-        return new ResponseEntity<>(authenticationService.authenticate(), HttpStatus.OK);
+        return ResponseEntity.ok(authenticationService.authenticate());
     }
 
     @GetMapping("/log-out")
-    public ResponseEntity<String> logOut(HttpServletResponse response) {
+    public ResponseEntity<Void> logOut(HttpServletResponse response) {
         cookieManager.removeCookies(response);
-        return new ResponseEntity<>("Successfully logged out", HttpStatus.OK);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/update-email") ResponseEntity<Void> updateEmail(@Valid @RequestBody EmailRequest request) {
+        authenticationService.updateEmail(request);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/forgot-password") ResponseEntity<Void> forgotPassword(@Valid @RequestBody EmailRequest request) {
+        authenticationService.forgotPassword(request);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/update-password") ResponseEntity<Void> updatePassword(@Valid @RequestBody UpdatePasswordRequest request) {
+        authenticationService.updatePassword(request);
+        return ResponseEntity.ok(null);
     }
 }

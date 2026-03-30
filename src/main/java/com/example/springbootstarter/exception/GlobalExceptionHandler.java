@@ -43,6 +43,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(EmailUnverifiedException.class)
+    public ResponseEntity<String> handleEmailUnverifiedException(Exception e) {
+        String message = e.getMessage();
+        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

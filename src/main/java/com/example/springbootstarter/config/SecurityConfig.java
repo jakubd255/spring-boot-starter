@@ -1,7 +1,7 @@
 package com.example.springbootstarter.config;
 
-import com.example.springbootstarter.util.jwt.JwtAuthenticationFilter;
 import com.example.springbootstarter.service.AuthenticationService;
+import com.example.springbootstarter.util.session.SessionAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationService authenticationService;
-    private final JwtAuthenticationFilter authenticationFilter;
+    private final SessionAuthenticationFilter authenticationFilter;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -47,8 +47,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/api/authenticate").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/log-in").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/verify").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/{id}").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/auth/reset-password", "/api/auth/forgot-password").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);

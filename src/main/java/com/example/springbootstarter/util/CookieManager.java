@@ -1,21 +1,19 @@
-package com.example.springbootstarter.util.cookie;
+package com.example.springbootstarter.util;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class CookieManager {
-    @Value("${token.expiration.time}")
-    private int jwtExpirationTime;
+    int expirationTime = 60*60*24*30;
 
     public void addCookie(HttpServletResponse response, String token) {
         //HTTP-Only cookie with JWT
-        Cookie tokenCookie = createCookie("access-token", token, true, jwtExpirationTime);
+        Cookie tokenCookie = createCookie("access-token", token, true, expirationTime);
         //Cookie for JavaScript to check is user logged-in
-        Cookie isLoggedCookie = createCookie("is-logged", "true", false, jwtExpirationTime);
+        Cookie isLoggedCookie = createCookie("is-logged", "true", false, expirationTime);
 
         response.addCookie(tokenCookie);
         response.addCookie(isLoggedCookie);

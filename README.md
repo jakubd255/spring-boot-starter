@@ -6,13 +6,14 @@ Additionally, it is possible to upload and download files.
 
 ## Features
 - Spring Security
-- JWT Authentication
+- Session-based authentication
+- Email verification
 - BCrypt password hashing
 - HTTP-Only Cookies
 - File upload and download
 
 ## Endpoints
-### POST: /api/register
+### POST: /api/auth/register
 ```json
 {
   "fullName": "Example User",
@@ -20,21 +21,55 @@ Additionally, it is possible to upload and download files.
   "password": "12345678"
 }
 ```
+- Registers new user
 
-### POST: /api/log-in
+### POST: /api/auth/log-in
 ```json
 {
   "email": "example@gmail.com",
   "password": "12345678"
 }
 ```
+- Log in a user
+- Returns a `sessionId` in the response and sets an HTTP-only cookie
 
-### GET: /api/authenticate
+### POST: /api/auth/verify?token=?
+- Verifies the user’s email using a token
+- Returns a `sessionId` upon successful verification
+
+### GET: /api/auth/authenticate
 - Get user data
 - Requires authentication 
+- Returns a `UserDto` object
 
-### GET: /api/log-out
+### GET: /api/auth/log-out
 - Log out by removing HTTP-only cookies
+
+### PUT: /api/auth/update-email
+- Updates the user’s email
+- Requires authentication
+
+### PUT: /api/auth/forgot-password
+- Sends a password reset link to the user’s email
+
+### PUT: /api/auth/reset-password
+```json
+{
+  "token": "reset-token",
+  "password": "12345678"
+}
+```
+- Resets the user's password using a token
+
+### PUT: /api/auth/update-password
+```json
+{
+  "currentPassword": "12345678",
+  "newPassword": "newPassword123"
+}
+```
+- Changes the user’s current password
+- Requires authentication
 
 ### GET: /api/users
 - Get list of users

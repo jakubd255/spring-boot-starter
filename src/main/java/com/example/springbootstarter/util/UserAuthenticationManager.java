@@ -1,15 +1,23 @@
-package com.example.springbootstarter.util.jwt;
+package com.example.springbootstarter.util;
 
 import com.example.springbootstarter.model.User;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JwtAuthenticationManager {
+public class UserAuthenticationManager {
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (User)authentication.getPrincipal();
+
+        User user = (User)authentication.getPrincipal();
+
+        if(!user.isEnabled()) {
+            throw new AccessDeniedException("User is disabled");
+        }
+
+        return user;
     }
 
     public boolean isUserAuthenticated() {

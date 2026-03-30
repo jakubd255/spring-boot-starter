@@ -10,7 +10,7 @@ import java.util.List;
 public class UserCsvExporter {
     private final CSVWriter csvWriter;
 
-    private final String[] headerFields = {"Id", "fullName", "email", "role", "isAccountNonExpired", "isAccountNonLocked", "isCredentialsNonExpired", "isEnabled"};
+    private final String[] headerFields = {"id", "fullName", "email", "pendingEmail", "role", "verified", "active", "createdAt"};
 
     public UserCsvExporter(Writer writer) {
         csvWriter = new CSVWriter(writer);
@@ -24,11 +24,11 @@ public class UserCsvExporter {
                     Long.toString(user.getId()),
                     user.getFullName(),
                     user.getEmail(),
+                    user.getPendingEmail(),
                     user.getRole().getAuthority(),
-                    Boolean.toString(user.isAccountNonExpired()),
-                    Boolean.toString(user.isAccountNonLocked()),
-                    Boolean.toString(user.isCredentialsNonExpired()),
-                    Boolean.toString(user.isEnabled())
+                    Boolean.toString(user.isVerified()),
+                    Boolean.toString(user.isActive()),
+                    user.getCreatedAt().toString()
             });
         }
 

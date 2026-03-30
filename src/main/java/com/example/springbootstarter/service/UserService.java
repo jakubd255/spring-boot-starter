@@ -3,7 +3,6 @@ package com.example.springbootstarter.service;
 import com.example.springbootstarter.util.csv.UserCsvExporter;
 import com.example.springbootstarter.dto.DtoConverter;
 import com.example.springbootstarter.dto.response.UserDto;
-import com.example.springbootstarter.dto.response.UserExtendedDto;
 import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,14 +24,6 @@ public class UserService {
                 .findAll()
                 .stream()
                 .map(DtoConverter::convertUserToDto)
-                .toList();
-    }
-
-    public List<UserExtendedDto> findAllExtended() {
-        return userRepository
-                .findAll()
-                .stream()
-                .map(DtoConverter::convertUserToExtendedDto)
                 .toList();
     }
 
