@@ -25,7 +25,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PreAuthorize("hasAuthority('user:read')")
     @GetMapping
     public ResponseEntity<List<UserDto>> getAll(@ModelAttribute UserQuery query) {
         Specification<User> spec = query.toSpecification();
@@ -35,7 +34,6 @@ public class UserController {
         return ResponseEntity.ok(UserDtoMapper.mapUsersToDto(users));
     }
 
-    @PreAuthorize("hasAuthority('user:read')")
     @GetMapping("/csv")
     public void exportToCsv(@ModelAttribute UserQuery query, HttpServletResponse response) throws IOException {
         List<User> users = userService.getAll();
@@ -47,7 +45,6 @@ public class UserController {
         exporter.generateCsv(users);
     }
 
-    @PreAuthorize("hasAuthority('user:read')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getById(@PathVariable Integer id) {
         User user = userService.getById(id);

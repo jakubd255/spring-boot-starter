@@ -1,7 +1,7 @@
 # Spring Boot Starter
 Starter Spring Boot server application that provides a login and registration system.
-It uses Spring Security for authentication, with JWT (JSON Web Token) and BCrypt.
-The authentication token can be provided through the request header using the Bearer token format or HTTP-only cookie.  
+It uses Spring Security for authentication and BCrypt password hashing.
+The authentication token (session id) can be provided through the request header using the Bearer token format or HTTP-only cookie.  
 Additionally, it is possible to upload and download files.
 
 ## Features
@@ -78,7 +78,24 @@ Additionally, it is possible to upload and download files.
 - Download list of users in csv file
 
 ### GET: /api/users/:id
-  - Get chosen user by id
+- Get chosen user by id
+
+### PUT: /api/users/:id/active
+- Block or unlock user
+- Requires authentication and ADMIN role
+
+### PUT: /api/users/:id/role
+```json
+{
+  "role": "USER | ADMIN"
+}
+```
+- Update user's role
+- Requires authentication and ADMIN role
+
+### DELETE: /api/users/:id
+- Delete user by id
+- Requires authentication and ADMIN role
 
 ### POST: /api/files/upload
 - multipart/form-data, *file* key

@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/log-in").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/verify").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/csv", "/api/users/{id}").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/auth/reset-password", "/api/auth/forgot-password").permitAll()
                         .anyRequest().authenticated()
                 )
