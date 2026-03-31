@@ -50,15 +50,15 @@ public class AuthenticationService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setActive(true);
             userService.save(user);
+            tokenService.deleteAllByUserId(user.getId());
         }
 
-        tokenService.deleteAllByUserId(user.getId());
         Token token = tokenService.createEmailToken(user);
 
         emailSender.sendVerificationEmail(user.getEmail(), token.getCode());
     }
 
-    public String logIn(LoginRequest request) {
+    public String logIn(LoginRequest request, String userAgent) {
         User user = userService.getByEmail(request.getEmail());
 
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -70,24 +70,16 @@ public class AuthenticationService {
             throw new EmailUnverifiedException("Email not verified");
         }
 
-        return sessionService.create(user).getId().toString();
+        return sessionService.create(user, userAgent).getId().toString();
     }
 
-    public User authenticate() {
-        return authenticationManager.getAuthenticatedUser();
-    }
-
-    public void logOut() {
-        User user = authenticationManager.getAuthenticatedUser();
-        sessionService.delete(user.getAuthSession());
-    }
-
-    public String verifyEmail(String code) {
+    public Optional<String> verifyEmail(String code, String userAgent) {
         Token token = tokenService.getValidToken(code, TokenType.EMAIL_VERIFICATION);
 
         User user = token.getUser();
+        boolean firstVerification = !user.isVerified();
 
-        if(!user.isVerified()) {
+        if(firstVerification) {
             user.setVerified(true);
         }
         else if(user.getPendingEmail() != null) {
@@ -98,7 +90,21 @@ public class AuthenticationService {
         userService.save(user);
         tokenService.delete(token);
 
-        return sessionService.create(user).getId().toString();
+        if(firstVerification) {
+            Session session = sessionService.create(user, userAgent);
+            return Optional.of(session.getId().toString());
+        }
+
+        return Optional.empty();
+    }
+
+    public User authenticate() {
+        return authenticationManager.getAuthenticatedUser();
+    }
+
+    public void logOut() {
+        User user = authenticationManager.getAuthenticatedUser();
+        sessionService.delete(user.getAuthSession());
     }
 
     @Transactional

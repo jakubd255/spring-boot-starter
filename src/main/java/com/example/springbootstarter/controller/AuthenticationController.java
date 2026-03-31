@@ -6,12 +6,15 @@ import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.util.CookieManager;
 import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -27,16 +30,23 @@ public class AuthenticationController {
     }
 
     @PostMapping("/log-in")
-    public ResponseEntity<String> logIn(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
-        String sessionId = authenticationService.logIn(request);
+    public ResponseEntity<String> logIn(@Valid @RequestBody LoginRequest request, HttpServletResponse response, HttpServletRequest httpRequest) {
+        String userAgent = httpRequest.getHeader("User-Agent");
+
+        String sessionId = authenticationService.logIn(request, userAgent);
         cookieManager.addCookie(response, sessionId);
+
         return ResponseEntity.ok(sessionId);
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
-        String sessionId = authenticationService.verifyEmail(token);
-        return ResponseEntity.ok(sessionId);
+    public ResponseEntity<String> verifyEmail(@RequestParam String token, HttpServletResponse response, HttpServletRequest httpRequest) {
+        String userAgent = httpRequest.getHeader("User-Agent");
+
+        Optional<String> sessionIdOpt = authenticationService.verifyEmail(token, userAgent);
+        sessionIdOpt.ifPresent(sessionId -> cookieManager.addCookie(response, sessionId));
+
+        return ResponseEntity.ok(sessionIdOpt.orElse(null));
     }
 
     @GetMapping("/authenticate")

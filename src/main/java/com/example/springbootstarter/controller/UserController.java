@@ -2,10 +2,12 @@ package com.example.springbootstarter.controller;
 
 import com.example.springbootstarter.dto.converter.UserDtoMapper;
 import com.example.springbootstarter.dto.request.UpdateRoleRequest;
+import com.example.springbootstarter.dto.request.UpdateUserRequest;
 import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.query.request.UserQuery;
 import com.example.springbootstarter.service.UserService;
+import com.example.springbootstarter.util.PermissionManager;
 import com.example.springbootstarter.util.csv.UserCsvExporter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final PermissionManager permissionManager;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAll(@ModelAttribute UserQuery query) {
@@ -52,23 +55,42 @@ public class UserController {
     }
 
     @PreAuthorize("hasAuthority('user:update')")
-    @PutMapping("/{id}/active")
-    public ResponseEntity<UserDto> toggleActiveById(@PathVariable Integer id) {
-        User user = userService.toggleActiveById(id);
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateById(@PathVariable Integer id, @RequestBody UpdateUserRequest request) {
+        User user = userService.getById(id);
+        permissionManager.checkCanUpdateUser(user);
+
+        user = userService.update(user, request);
         return ResponseEntity.ok(UserDtoMapper.mapUserToDto(user));
     }
 
     @PreAuthorize("hasAuthority('user:update')")
     @PutMapping("/{id}/role")
     public ResponseEntity<UserDto> updateRoleById(@PathVariable Integer id, @RequestBody UpdateRoleRequest request) {
-        User user = userService.updateRoleById(id, request);
-        return ResponseEntity.ok(UserDtoMapper.mapUserToDto(user));
+        User user = userService.getById(id);
+        permissionManager.checkCanUpdateUser(user);
+
+        User updatedUser = userService.updateRole(user, request);
+        return ResponseEntity.ok(UserDtoMapper.mapUserToDto(updatedUser));
+    }
+
+    @PreAuthorize("hasAuthority('user:update')")
+    @PutMapping("/{id}/active")
+    public ResponseEntity<UserDto> toggleActiveById(@PathVariable Integer id) {
+        User user = userService.getById(id);
+        permissionManager.checkCanUpdateUser(user);
+
+        User updatedUser = userService.toggleActive(user);
+        return ResponseEntity.ok(UserDtoMapper.mapUserToDto(updatedUser));
     }
 
     @PreAuthorize("hasAuthority('user:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
-        userService.deleteById(id);
+        User user = userService.getById(id);
+        permissionManager.checkCanDeleteUser(user);
+
+        userService.delete(user);
         return ResponseEntity.ok(null);
     }
 }

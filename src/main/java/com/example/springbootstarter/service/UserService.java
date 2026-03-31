@@ -1,6 +1,7 @@
 package com.example.springbootstarter.service;
 
 import com.example.springbootstarter.dto.request.UpdateRoleRequest;
+import com.example.springbootstarter.dto.request.UpdateUserRequest;
 import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,29 +44,23 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User toggleActiveById(Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        user.setActive(!user.isActive());
-
+    public User update(User user, UpdateUserRequest request) {
+        Optional.ofNullable(request.getFullName())
+                .ifPresent(user::setFullName);
         return userRepository.save(user);
     }
 
-    public User updateRoleById(Integer id, UpdateRoleRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
+    public User updateRole(User user, UpdateRoleRequest request) {
         user.setRole(request.getRole());
+        return userRepository.save(user);
+    }
 
+    public User toggleActive(User user) {
+        user.setActive(!user.isActive());
         return userRepository.save(user);
     }
 
     public void delete(User user) {
         userRepository.delete(user);
-    }
-
-    public void deleteById(Integer id) {
-        userRepository.deleteById(id);
     }
 }
