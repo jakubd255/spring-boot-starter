@@ -16,5 +16,5 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
 
     @Modifying
     @Query("DELETE FROM Session s WHERE s.user.id = ?1")
-    void deleteSessionsByUserId(Integer userId);
+    void deleteAllByUserId(Integer userId);
 }

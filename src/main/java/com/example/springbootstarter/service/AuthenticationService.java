@@ -1,61 +1,47 @@
 package com.example.springbootstarter.service;
 
-import com.example.springbootstarter.dto.DtoConverter;
 import com.example.springbootstarter.dto.request.*;
-import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.exception.EmailAlreadyExistsException;
-import com.example.springbootstarter.exception.EmailNotFoundException;
 import com.example.springbootstarter.exception.EmailUnverifiedException;
 import com.example.springbootstarter.exception.InvalidPasswordException;
-import com.example.springbootstarter.factory.SessionFactory;
-import com.example.springbootstarter.factory.TokenFactory;
 import com.example.springbootstarter.factory.UserFactory;
 import com.example.springbootstarter.model.*;
-import com.example.springbootstarter.repository.SessionRepository;
-import com.example.springbootstarter.repository.TokenRepository;
 import com.example.springbootstarter.util.EmailSender;
 import com.example.springbootstarter.util.auth.UserAuthenticationManager;
-import com.example.springbootstarter.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class AuthenticationService {
-    private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
-    private final SessionRepository sessionRepository;
+    private final UserService userService;
+    private final TokenService tokenService;
+    private final SessionService sessionService;
+
     private final PasswordEncoder passwordEncoder;
     private final UserAuthenticationManager authenticationManager;
-    private final EmailSender emailSender;
-    private final TokenFactory tokenFactory;
     private final UserFactory userFactory;
-    private final SessionFactory sessionFactory;
+    private final EmailSender emailSender;
 
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userService::getByEmail;
     }
 
     @Transactional
     public void register(RegisterRequest request) {
-        Optional<User> existingUserOpt = userRepository.findByEmail(request.getEmail());
+        Optional<User> existingOpt = userService.findByEmail(request.getEmail());
         User user;
 
-        if(existingUserOpt.isEmpty()) {
-            user = userRepository.save(userFactory.createUser(request));
+        if(existingOpt.isEmpty()) {
+            user = userService.save(userFactory.createUser(request));
         }
         else {
-            user = existingUserOpt.get();
+            user = existingOpt.get();
             if(user.isVerified()) {
                 throw new EmailAlreadyExistsException("This email is taken");
             }
@@ -63,50 +49,41 @@ public class AuthenticationService {
             user.setFullName(request.getFullName());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setActive(true);
-            userRepository.save(user);
+            userService.save(user);
         }
 
-        tokenRepository.deleteAllByUserId(user.getId());
-        Token token = tokenRepository.save(tokenFactory.createEmailToken(user));
+        tokenService.deleteAllByUserId(user.getId());
+        Token token = tokenService.createEmailToken(user);
+
         emailSender.sendVerificationEmail(user.getEmail(), token.getCode());
     }
 
     public String logIn(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new EmailNotFoundException("Invalid email"));
+        User user = userService.getByEmail(request.getEmail());
 
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidPasswordException("Invalid password");
         }
         else if(!user.isVerified()) {
-            Token token = tokenRepository.save(tokenFactory.createEmailToken(user));
+            Token token = tokenService.createEmailToken(user);
             emailSender.sendVerificationEmail(user.getEmail(), token.getCode());
             throw new EmailUnverifiedException("Email not verified");
         }
 
-        Session session = sessionRepository.save(sessionFactory.createSession(user));
-        return session.getId().toString();
+        return sessionService.create(user).getId().toString();
     }
 
-    public UserDto authenticate() {
-        return DtoConverter.convertUserToDto(authenticationManager.getAuthenticatedUser());
+    public User authenticate() {
+        return authenticationManager.getAuthenticatedUser();
     }
 
     public void logOut() {
-        User authUser = authenticationManager.getAuthenticatedUser();
-        sessionRepository.deleteById(authUser.getAuthSession().getId());
+        User user = authenticationManager.getAuthenticatedUser();
+        sessionService.delete(user.getAuthSession());
     }
 
     public String verifyEmail(String code) {
-        Token token = tokenRepository.findByCode(code)
-                .orElseThrow(() -> new EntityNotFoundException("Invalid token"));
-
-        if(token.getExpiresAt().before(new Date())) {
-            throw new BadCredentialsException("Token expired");
-        }
-        if(token.getType() != TokenType.EMAIL_VERIFICATION) {
-            throw new BadCredentialsException("Invalid token type");
-        }
+        Token token = tokenService.getValidToken(code, TokenType.EMAIL_VERIFICATION);
 
         User user = token.getUser();
 
@@ -118,26 +95,25 @@ public class AuthenticationService {
             user.setPendingEmail(null);
         }
 
-        userRepository.save(user);
-        tokenRepository.delete(token);
+        userService.save(user);
+        tokenService.delete(token);
 
-        Session session = sessionRepository.save(sessionFactory.createSession(user));
-        return session.getId().toString();
+        return sessionService.create(user).getId().toString();
     }
 
     @Transactional
     public void updateEmail(EmailRequest request) {
         User authUser = authenticationManager.getAuthenticatedUser();
-        Optional<User> existingUserOpt = userRepository.findByEmail(request.getEmail());
+        Optional<User> existingOpt = userService.findByEmail(request.getEmail());
 
-        if(existingUserOpt.isPresent()) {
-            User existingUser = existingUserOpt.get();
+        if(existingOpt.isPresent()) {
+            User existingUser = existingOpt.get();
 
             //Restore old email or no change
             if(existingUser.getId().equals(authUser.getId())) {
                 authUser.setPendingEmail(null);
-                userRepository.save(authUser);
-                tokenRepository.deleteAllByUserId(authUser.getId());
+                userService.save(authUser);
+                tokenService.deleteAllByUserId(authUser.getId());
                 return;
             }
 
@@ -147,51 +123,43 @@ public class AuthenticationService {
             }
 
             //Delete unverified user
-            tokenRepository.deleteAllByUserId(existingUser.getId());
-            userRepository.delete(existingUser);
+            tokenService.deleteAllByUserId(existingUser.getId());
+            userService.delete(existingUser);
         }
 
         //Set pendingEmail and send token
         authUser.setPendingEmail(request.getEmail());
-        userRepository.save(authUser);
+        userService.save(authUser);
 
-        tokenRepository.deleteAllByUserId(authUser.getId());
-        Token token = tokenRepository.save(tokenFactory.createEmailToken(authUser));
+        tokenService.deleteAllByUserId(authUser.getId());
+        Token token = tokenService.createEmailToken(authUser);
+
         emailSender.sendVerificationEmail(request.getEmail(), token.getCode());
     }
 
     @Transactional
     public void forgotPassword(EmailRequest request) {
-        Optional<User> existingUserOpt = userRepository.findByEmail(request.getEmail());
-        if(existingUserOpt.isEmpty()) {
-           return;
-        }
+        Optional<User> existingUserOpt = userService.findByEmail(request.getEmail());
+        if(existingUserOpt.isEmpty()) return;
+
         User user = existingUserOpt.get();
 
-        tokenRepository.deleteAllByUserId(user.getId());
-        sessionRepository.deleteSessionsByUserId(user.getId());
+        tokenService.deleteAllByUserId(user.getId());
+        sessionService.deleteAllByUserId(user.getId());
 
-        Token token = tokenRepository.save(tokenFactory.createPasswordToken(user));
+        Token token = tokenService.createPasswordToken(user);
         emailSender.sendResetPassword(user.getEmail(), token.getCode());
     }
 
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        Token token = tokenRepository.findByCode(request.getToken())
-                .orElseThrow(() -> new EntityNotFoundException("Invalid token"));
-
-        if(token.getExpiresAt().before(new Date())) {
-            throw new BadCredentialsException("Token expired");
-        }
-        if(token.getType() != TokenType.RESET_PASSWORD) {
-            throw new BadCredentialsException("Invalid token type");
-        }
+        Token token = tokenService.getValidToken(request.getToken(), TokenType.RESET_PASSWORD);
 
         User user = token.getUser();
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        userRepository.save(user);
+        userService.save(user);
 
-        tokenRepository.delete(token);
+        tokenService.delete(token);
     }
 
     public void updatePassword(UpdatePasswordRequest request) {
@@ -202,6 +170,6 @@ public class AuthenticationService {
         }
 
         authUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(authUser);
+        userService.save(authUser);
     }
 }

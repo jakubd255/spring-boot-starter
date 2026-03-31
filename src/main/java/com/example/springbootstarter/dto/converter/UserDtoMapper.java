@@ -1,10 +1,12 @@
-package com.example.springbootstarter.dto;
+package com.example.springbootstarter.dto.converter;
 
 import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.model.User;
 
-public class DtoConverter {
-    public static UserDto convertUserToDto(User user) {
+import java.util.List;
+
+public class UserDtoMapper {
+    public static UserDto mapUserToDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getFullName(),
@@ -15,5 +17,9 @@ public class DtoConverter {
                 user.isActive(),
                 user.getCreatedAt()
         );
+    }
+
+    public static List<UserDto> mapUsersToDto(List<User> users) {
+        return users.stream().map(UserDtoMapper::mapUserToDto).toList();
     }
 }

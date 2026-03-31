@@ -1,6 +1,8 @@
 package com.example.springbootstarter.controller;
 
+import com.example.springbootstarter.dto.converter.UserDtoMapper;
 import com.example.springbootstarter.dto.request.*;
+import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.util.CookieManager;
 import com.example.springbootstarter.dto.response.UserDto;
 import com.example.springbootstarter.service.AuthenticationService;
@@ -39,7 +41,8 @@ public class AuthenticationController {
 
     @GetMapping("/authenticate")
     public ResponseEntity<UserDto> authenticate() {
-        return ResponseEntity.ok(authenticationService.authenticate());
+        User user = authenticationService.authenticate();
+        return ResponseEntity.ok(UserDtoMapper.mapUserToDto(user));
     }
 
     @GetMapping("/log-out")

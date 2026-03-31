@@ -1,54 +1,71 @@
 package com.example.springbootstarter.service;
 
-import com.example.springbootstarter.query.request.UserQuery;
-import com.example.springbootstarter.util.csv.UserCsvExporter;
-import com.example.springbootstarter.dto.DtoConverter;
-import com.example.springbootstarter.dto.response.UserDto;
+import com.example.springbootstarter.dto.request.UpdateRoleRequest;
 import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    public List<UserDto> findAll(UserQuery query) {
-        Specification<User> spec = query.toSpecification();
-        Pageable pageable = query.toPageable();
-
-        return userRepository
-                .findAll(spec, pageable)
-                .getContent()
-                .stream()
-                .map(DtoConverter::convertUserToDto)
-                .toList();
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
-    public void exportToCsv(HttpServletResponse response) throws IOException {
-        List<User> users = userRepository.findAll();
-
-        response.setContentType("text/csv");
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=users.csv");
-
-        UserCsvExporter usersToCsv = new UserCsvExporter(response.getWriter());
-        usersToCsv.generateCsv(users);
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
-    public UserDto findById(Integer id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("User not found")
-        );
-        return DtoConverter.convertUserToDto(user);
+    public List<User> getAll(Specification<User> spec, Pageable pageable) {
+        return userRepository.findAll(spec, pageable).getContent();
+    }
+
+    public User getById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    }
+
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Invalid email"));
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public User toggleActiveById(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setActive(!user.isActive());
+
+        return userRepository.save(user);
+    }
+
+    public User updateRoleById(Integer id, UpdateRoleRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setRole(request.getRole());
+
+        return userRepository.save(user);
+    }
+
+    public void delete(User user) {
+        userRepository.delete(user);
+    }
+
+    public void deleteById(Integer id) {
+        userRepository.deleteById(id);
     }
 }
