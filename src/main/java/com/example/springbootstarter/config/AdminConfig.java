@@ -20,12 +20,12 @@ public class AdminConfig {
 
     @PostConstruct
     public void initialize() {
-        if(userRepository.countByRole(Role.ROLE_ADMIN) == 0) {
+        if(userRepository.countByRole(Role.ADMIN) == 0) {
             User admin = User.builder()
                     .fullName("Admin")
                     .email("admin@admin.com")
                     .password(passwordEncoder.encode(adminPassword))
-                    .role(Role.ROLE_ADMIN)
+                    .role(Role.ADMIN)
                     .build();
 
             userRepository.save(admin);

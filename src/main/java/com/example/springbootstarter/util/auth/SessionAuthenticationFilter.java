@@ -1,4 +1,4 @@
-package com.example.springbootstarter.util.session;
+package com.example.springbootstarter.util.auth;
 
 import com.example.springbootstarter.model.User;
 import jakarta.servlet.FilterChain;

@@ -44,6 +44,7 @@ public class AuthenticationController {
 
     @GetMapping("/log-out")
     public ResponseEntity<Void> logOut(HttpServletResponse response) {
+        authenticationService.logOut();
         cookieManager.removeCookies(response);
         return ResponseEntity.ok(null);
     }

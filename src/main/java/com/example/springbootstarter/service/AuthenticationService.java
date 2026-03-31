@@ -7,13 +7,14 @@ import com.example.springbootstarter.exception.EmailAlreadyExistsException;
 import com.example.springbootstarter.exception.EmailNotFoundException;
 import com.example.springbootstarter.exception.EmailUnverifiedException;
 import com.example.springbootstarter.exception.InvalidPasswordException;
+import com.example.springbootstarter.factory.SessionFactory;
 import com.example.springbootstarter.factory.TokenFactory;
+import com.example.springbootstarter.factory.UserFactory;
 import com.example.springbootstarter.model.*;
 import com.example.springbootstarter.repository.SessionRepository;
 import com.example.springbootstarter.repository.TokenRepository;
 import com.example.springbootstarter.util.EmailSender;
-import com.example.springbootstarter.util.TokenCodeGenerator;
-import com.example.springbootstarter.util.UserAuthenticationManager;
+import com.example.springbootstarter.util.auth.UserAuthenticationManager;
 import com.example.springbootstarter.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final UserAuthenticationManager authenticationManager;
     private final EmailSender emailSender;
+    private final TokenFactory tokenFactory;
+    private final UserFactory userFactory;
+    private final SessionFactory sessionFactory;
 
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
@@ -48,13 +52,7 @@ public class AuthenticationService {
         User user;
 
         if(existingUserOpt.isEmpty()) {
-            user = User.builder()
-                    .fullName(request.getFullName())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.ROLE_USER)
-                    .build();
-            user = userRepository.save(user);
+            user = userRepository.save(userFactory.createUser(request));
         }
         else {
             user = existingUserOpt.get();
@@ -69,7 +67,7 @@ public class AuthenticationService {
         }
 
         tokenRepository.deleteAllByUserId(user.getId());
-        Token token = tokenRepository.save(TokenFactory.createEmailToken(user));
+        Token token = tokenRepository.save(tokenFactory.createEmailToken(user));
         emailSender.sendVerificationEmail(user.getEmail(), token.getCode());
     }
 
@@ -81,19 +79,22 @@ public class AuthenticationService {
             throw new InvalidPasswordException("Invalid password");
         }
         else if(!user.isVerified()) {
-            Token token = tokenRepository.save(TokenFactory.createEmailToken(user));
+            Token token = tokenRepository.save(tokenFactory.createEmailToken(user));
             emailSender.sendVerificationEmail(user.getEmail(), token.getCode());
             throw new EmailUnverifiedException("Email not verified");
         }
 
-        Session session = Session.builder()
-                .user(user)
-                .build();
-        return sessionRepository.save(session).getId().toString();
+        Session session = sessionRepository.save(sessionFactory.createSession(user));
+        return session.getId().toString();
     }
 
     public UserDto authenticate() {
         return DtoConverter.convertUserToDto(authenticationManager.getAuthenticatedUser());
+    }
+
+    public void logOut() {
+        User authUser = authenticationManager.getAuthenticatedUser();
+        sessionRepository.deleteById(authUser.getAuthSession().getId());
     }
 
     public String verifyEmail(String code) {
@@ -120,10 +121,8 @@ public class AuthenticationService {
         userRepository.save(user);
         tokenRepository.delete(token);
 
-        Session session = Session.builder()
-                .user(user)
-                .build();
-        return sessionRepository.save(session).getId().toString();
+        Session session = sessionRepository.save(sessionFactory.createSession(user));
+        return session.getId().toString();
     }
 
     @Transactional
@@ -157,7 +156,7 @@ public class AuthenticationService {
         userRepository.save(authUser);
 
         tokenRepository.deleteAllByUserId(authUser.getId());
-        Token token = tokenRepository.save(TokenFactory.createEmailToken(authUser));
+        Token token = tokenRepository.save(tokenFactory.createEmailToken(authUser));
         emailSender.sendVerificationEmail(request.getEmail(), token.getCode());
     }
 
@@ -172,11 +171,7 @@ public class AuthenticationService {
         tokenRepository.deleteAllByUserId(user.getId());
         sessionRepository.deleteSessionsByUserId(user.getId());
 
-        Token token = tokenRepository.save(Token.builder()
-                .user(user)
-                .code(TokenCodeGenerator.generateTokenCode())
-                .type(TokenType.RESET_PASSWORD)
-                .build());
+        Token token = tokenRepository.save(tokenFactory.createPasswordToken(user));
         emailSender.sendResetPassword(user.getEmail(), token.getCode());
     }
 

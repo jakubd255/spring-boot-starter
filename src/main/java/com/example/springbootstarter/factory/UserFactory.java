@@ -17,11 +17,20 @@ public class UserFactory {
                 .fullName(fullName)
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .role(Role.ROLE_USER)
+                .role(Role.USER)
                 .build();
     }
 
     public  User createUser(RegisterRequest request) {
         return createUser(request.getFullName(), request.getEmail(), request.getPassword());
+    }
+
+    public User createAdminUser(String fullName, String email, String password) {
+        return User.builder()
+                .fullName(fullName)
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(Role.ADMIN)
+                .build();
     }
 }

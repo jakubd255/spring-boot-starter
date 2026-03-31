@@ -1,4 +1,4 @@
-package com.example.springbootstarter.util.session;
+package com.example.springbootstarter.util.auth;
 
 import com.example.springbootstarter.model.Session;
 import com.example.springbootstarter.model.User;
@@ -53,7 +53,9 @@ public class SessionExtractor {
             return null;
         }
         else {
-            return session.getUser();
+            User user = session.getUser();
+            user.setAuthSession(session);
+            return user;
         }
     }
 }

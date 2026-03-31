@@ -25,7 +25,7 @@ public class UserCsvExporter {
                     user.getFullName(),
                     user.getEmail(),
                     user.getPendingEmail(),
-                    user.getRole().getAuthority(),
+                    user.getRole().toString(),
                     Boolean.toString(user.isVerified()),
                     Boolean.toString(user.isActive()),
                     user.getCreatedAt().toString()

@@ -1,5 +1,6 @@
 package com.example.springbootstarter.service;
 
+import com.example.springbootstarter.query.request.UserQuery;
 import com.example.springbootstarter.util.csv.UserCsvExporter;
 import com.example.springbootstarter.dto.DtoConverter;
 import com.example.springbootstarter.dto.response.UserDto;
@@ -8,6 +9,9 @@ import com.example.springbootstarter.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +23,13 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
-    public List<UserDto> findAll() {
+    public List<UserDto> findAll(UserQuery query) {
+        Specification<User> spec = query.toSpecification();
+        Pageable pageable = query.toPageable();
+
         return userRepository
-                .findAll()
+                .findAll(spec, pageable)
+                .getContent()
                 .stream()
                 .map(DtoConverter::convertUserToDto)
                 .toList();

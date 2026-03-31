@@ -1,7 +1,7 @@
 package com.example.springbootstarter.config;
 
 import com.example.springbootstarter.service.AuthenticationService;
-import com.example.springbootstarter.util.session.SessionAuthenticationFilter;
+import com.example.springbootstarter.util.auth.SessionAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

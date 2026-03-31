@@ -1,4 +1,4 @@
-package com.example.springbootstarter.util;
+package com.example.springbootstarter.util.auth;
 
 import com.example.springbootstarter.model.User;
 import org.springframework.security.access.AccessDeniedException;
