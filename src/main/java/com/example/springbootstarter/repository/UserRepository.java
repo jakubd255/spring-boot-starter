@@ -1,7 +1,7 @@
 package com.example.springbootstarter.repository;
 
-import com.example.springbootstarter.model.Role;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.type.Role;
+import com.example.springbootstarter.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

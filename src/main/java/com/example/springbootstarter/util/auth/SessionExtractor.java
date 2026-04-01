@@ -1,7 +1,7 @@
 package com.example.springbootstarter.util.auth;
 
-import com.example.springbootstarter.model.Session;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.entity.Session;
+import com.example.springbootstarter.model.entity.User;
 import com.example.springbootstarter.repository.SessionRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

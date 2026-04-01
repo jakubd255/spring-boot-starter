@@ -1,6 +1,6 @@
 package com.example.springbootstarter.util.csv;
 
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.entity.User;
 import com.opencsv.CSVWriter;
 
 import java.io.IOException;

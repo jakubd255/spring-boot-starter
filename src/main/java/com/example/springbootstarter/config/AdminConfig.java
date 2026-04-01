@@ -1,7 +1,7 @@
 package com.example.springbootstarter.config;
 
-import com.example.springbootstarter.model.Role;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.type.Role;
+import com.example.springbootstarter.model.entity.User;
 import com.example.springbootstarter.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.example.springbootstarter.util;
 
-import com.example.springbootstarter.model.Permission;
-import com.example.springbootstarter.model.Session;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.type.Permission;
+import com.example.springbootstarter.model.entity.Session;
+import com.example.springbootstarter.model.entity.User;
 import com.example.springbootstarter.util.auth.UserAuthenticationManager;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

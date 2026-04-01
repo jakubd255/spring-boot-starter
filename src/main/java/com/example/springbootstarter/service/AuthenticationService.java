@@ -1,11 +1,14 @@
 package com.example.springbootstarter.service;
 
-import com.example.springbootstarter.dto.request.*;
 import com.example.springbootstarter.exception.EmailAlreadyExistsException;
 import com.example.springbootstarter.exception.EmailUnverifiedException;
 import com.example.springbootstarter.exception.InvalidPasswordException;
-import com.example.springbootstarter.factory.UserFactory;
-import com.example.springbootstarter.model.*;
+import com.example.springbootstarter.model.dto.request.*;
+import com.example.springbootstarter.model.factory.UserFactory;
+import com.example.springbootstarter.model.entity.Session;
+import com.example.springbootstarter.model.entity.Token;
+import com.example.springbootstarter.model.entity.User;
+import com.example.springbootstarter.model.type.TokenType;
 import com.example.springbootstarter.util.EmailSender;
 import com.example.springbootstarter.util.auth.UserAuthenticationManager;
 import jakarta.transaction.Transactional;

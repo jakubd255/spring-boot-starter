@@ -1,10 +1,10 @@
 package com.example.springbootstarter.controller;
 
-import com.example.springbootstarter.dto.converter.UserDtoMapper;
-import com.example.springbootstarter.dto.request.*;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.dto.mapper.UserDtoMapper;
+import com.example.springbootstarter.model.dto.request.*;
+import com.example.springbootstarter.model.entity.User;
 import com.example.springbootstarter.util.CookieManager;
-import com.example.springbootstarter.dto.response.UserDto;
+import com.example.springbootstarter.model.dto.response.UserDto;
 import com.example.springbootstarter.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

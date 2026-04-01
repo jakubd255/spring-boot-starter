@@ -1,8 +1,8 @@
 package com.example.springbootstarter.controller;
 
-import com.example.springbootstarter.dto.converter.SessionDtoMapper;
-import com.example.springbootstarter.dto.response.SessionDto;
-import com.example.springbootstarter.model.Session;
+import com.example.springbootstarter.model.dto.mapper.SessionDtoMapper;
+import com.example.springbootstarter.model.dto.response.SessionDto;
+import com.example.springbootstarter.model.entity.Session;
 import com.example.springbootstarter.service.SessionService;
 import com.example.springbootstarter.util.PermissionManager;
 import lombok.RequiredArgsConstructor;

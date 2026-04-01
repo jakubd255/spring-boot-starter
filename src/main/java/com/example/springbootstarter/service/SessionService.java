@@ -1,8 +1,8 @@
 package com.example.springbootstarter.service;
 
-import com.example.springbootstarter.factory.SessionFactory;
-import com.example.springbootstarter.model.Session;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.factory.SessionFactory;
+import com.example.springbootstarter.model.entity.Session;
+import com.example.springbootstarter.model.entity.User;
 import com.example.springbootstarter.repository.SessionRepository;
 import com.example.springbootstarter.util.agent.ParsedUserAgent;
 import com.example.springbootstarter.util.agent.UserAgentParser;

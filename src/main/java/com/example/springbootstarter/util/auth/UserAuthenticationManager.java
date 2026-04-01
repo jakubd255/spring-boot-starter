@@ -1,6 +1,6 @@
 package com.example.springbootstarter.util.auth;
 
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.entity.User;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

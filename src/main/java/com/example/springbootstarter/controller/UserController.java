@@ -1,11 +1,11 @@
 package com.example.springbootstarter.controller;
 
-import com.example.springbootstarter.dto.converter.UserDtoMapper;
-import com.example.springbootstarter.dto.request.UpdateRoleRequest;
-import com.example.springbootstarter.dto.request.UpdateUserRequest;
-import com.example.springbootstarter.dto.response.UserDto;
-import com.example.springbootstarter.model.User;
-import com.example.springbootstarter.query.request.UserQuery;
+import com.example.springbootstarter.model.dto.mapper.UserDtoMapper;
+import com.example.springbootstarter.model.dto.request.UpdateRoleRequest;
+import com.example.springbootstarter.model.dto.request.UpdateUserRequest;
+import com.example.springbootstarter.model.dto.response.UserDto;
+import com.example.springbootstarter.model.entity.User;
+import com.example.springbootstarter.repository.query.request.UserQuery;
 import com.example.springbootstarter.service.UserService;
 import com.example.springbootstarter.util.PermissionManager;
 import com.example.springbootstarter.util.csv.UserCsvExporter;

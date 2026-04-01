@@ -1,6 +1,6 @@
 package com.example.springbootstarter.util.auth;
 
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

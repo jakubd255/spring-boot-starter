@@ -1,9 +1,9 @@
 package com.example.springbootstarter.service;
 
-import com.example.springbootstarter.factory.TokenFactory;
-import com.example.springbootstarter.model.Token;
-import com.example.springbootstarter.model.TokenType;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.factory.TokenFactory;
+import com.example.springbootstarter.model.entity.Token;
+import com.example.springbootstarter.model.type.TokenType;
+import com.example.springbootstarter.model.entity.User;
 import com.example.springbootstarter.repository.TokenRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;

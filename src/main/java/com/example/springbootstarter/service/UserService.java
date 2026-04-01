@@ -1,8 +1,8 @@
 package com.example.springbootstarter.service;
 
-import com.example.springbootstarter.dto.request.UpdateRoleRequest;
-import com.example.springbootstarter.dto.request.UpdateUserRequest;
-import com.example.springbootstarter.model.User;
+import com.example.springbootstarter.model.dto.request.UpdateRoleRequest;
+import com.example.springbootstarter.model.dto.request.UpdateUserRequest;
+import com.example.springbootstarter.model.entity.User;
 import com.example.springbootstarter.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.springbootstarter.repository;
 
-import com.example.springbootstarter.model.Session;
+import com.example.springbootstarter.model.entity.Session;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
