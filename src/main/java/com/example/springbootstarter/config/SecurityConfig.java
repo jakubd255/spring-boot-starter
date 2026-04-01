@@ -1,5 +1,6 @@
 package com.example.springbootstarter.config;
 
+import com.example.springbootstarter.exception.RestAuthenticationEntryPoint;
 import com.example.springbootstarter.service.AuthenticationService;
 import com.example.springbootstarter.util.auth.SessionAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationService authenticationService;
     private final SessionAuthenticationFilter authenticationFilter;
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -45,6 +47,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/log-in").permitAll()
