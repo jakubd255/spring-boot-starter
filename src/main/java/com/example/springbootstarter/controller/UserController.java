@@ -54,7 +54,6 @@ public class UserController {
         return ResponseEntity.ok(UserDtoMapper.mapUserToDto(user));
     }
 
-    @PreAuthorize("hasAuthority('user:update')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateById(@PathVariable Integer id, @RequestBody UpdateUserRequest request) {
         User user = userService.getById(id);
@@ -91,6 +90,6 @@ public class UserController {
         permissionManager.checkCanDeleteUser(user);
 
         userService.delete(user);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -18,7 +18,9 @@ public enum Role {
     ADMIN(Set.of(
             Permission.USER_READ,
             Permission.USER_UPDATE,
-            Permission.USER_DELETE
+            Permission.USER_DELETE,
+            Permission.SESSION_READ,
+            Permission.SESSION_DELETE
     ));
 
     private final Set<Permission> permissions;

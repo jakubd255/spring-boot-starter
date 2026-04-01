@@ -13,27 +13,27 @@ import org.springframework.stereotype.Component;
 public class SessionExtractor {
     private final SessionRepository sessionRepository;
 
-    private Integer extractAccessTokenFromHeader(HttpServletRequest request) {
+    private String extractAccessTokenFromHeader(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
 
-        return (authHeader != null && authHeader.startsWith("Bearer ")) ? Integer.valueOf(authHeader.substring(7)) : null;
+        return (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null;
     }
 
-    private Integer extractAccessTokenFromCookie(HttpServletRequest request) {
+    private String extractAccessTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if(cookies != null) {
             for(Cookie cookie : cookies) {
                 if("access-token".equals(cookie.getName())) {
-                    return Integer.valueOf(cookie.getValue());
+                    return cookie.getValue();
                 }
             }
         }
         return null;
     }
 
-    private Integer extractSessionId(HttpServletRequest request) {
-        Integer fromHeader = extractAccessTokenFromHeader(request);
-        Integer fromCookie = extractAccessTokenFromCookie(request);
+    private String extractSessionToken(HttpServletRequest request) {
+        String fromHeader = extractAccessTokenFromHeader(request);
+        String fromCookie = extractAccessTokenFromCookie(request);
 
         if(fromCookie != null) {
             return fromCookie;
@@ -44,11 +44,11 @@ public class SessionExtractor {
     }
 
     public User extractUser(HttpServletRequest request) {
-        Integer sessionId = extractSessionId(request);
-        if(sessionId == null) {
+        String token = extractSessionToken(request);
+        if(token == null) {
             return null;
         }
-        Session session = sessionRepository.findSessionById(sessionId).orElse(null);
+        Session session = sessionRepository.findByToken(token).orElse(null);
         if(session == null) {
             return null;
         }

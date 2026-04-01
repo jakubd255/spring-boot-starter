@@ -6,8 +6,11 @@ import com.example.springbootstarter.model.User;
 import com.example.springbootstarter.repository.SessionRepository;
 import com.example.springbootstarter.util.agent.ParsedUserAgent;
 import com.example.springbootstarter.util.agent.UserAgentParser;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -26,11 +29,24 @@ public class SessionService {
         return sessionRepository.save(session);
     }
 
+    public Session getById(Integer id) {
+        return sessionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Session not found"));
+    }
+
+    public List<Session> getAll() {
+        return sessionRepository.findAll();
+    }
+
+    public List<Session> getByUserId(Integer userId) {
+        return sessionRepository.findByUserId(userId);
+    }
+
     public void delete(Session session) {
         sessionRepository.delete(session);
     }
 
-    public void deleteAllByUserId(Integer userId) {
-        sessionRepository.deleteAllByUserId(userId);
+    public void deleteByUserId(Integer userId) {
+        sessionRepository.deleteByUserId(userId);
     }
 }

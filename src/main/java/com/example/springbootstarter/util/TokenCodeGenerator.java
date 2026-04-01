@@ -2,6 +2,7 @@ package com.example.springbootstarter.util;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.UUID;
 
 public class TokenCodeGenerator {
     private static final SecureRandom secureRandom = new SecureRandom();
@@ -11,5 +12,9 @@ public class TokenCodeGenerator {
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encodeToString(randomBytes);
+    }
+
+    public static String generateTokenCodeUUID() {
+        return UUID.randomUUID().toString();
     }
 }

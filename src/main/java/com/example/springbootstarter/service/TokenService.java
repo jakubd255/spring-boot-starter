@@ -46,7 +46,7 @@ public class TokenService {
         tokenRepository.delete(token);
     }
 
-    public void deleteAllByUserId(Integer userId) {
-        tokenRepository.deleteAllByUserId(userId);
+    public void deleteByUserId(Integer userId) {
+        tokenRepository.deleteByUserId(userId);
     }
 }

@@ -14,5 +14,5 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
 
     @Modifying
     @Query("DELETE FROM Token t WHERE t.user.id = ?1")
-    void deleteAllByUserId(Integer id);
+    void deleteByUserId(Integer id);
 }

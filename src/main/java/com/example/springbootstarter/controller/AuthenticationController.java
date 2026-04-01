@@ -59,27 +59,27 @@ public class AuthenticationController {
     public ResponseEntity<Void> logOut(HttpServletResponse response) {
         authenticationService.logOut();
         cookieManager.removeCookies(response);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update-email") ResponseEntity<Void> updateEmail(@Valid @RequestBody EmailRequest request) {
         authenticationService.updateEmail(request);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/forgot-password") ResponseEntity<Void> forgotPassword(@Valid @RequestBody EmailRequest request) {
         authenticationService.forgotPassword(request);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         authenticationService.resetPassword(request);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update-password") ResponseEntity<Void> updatePassword(@Valid @RequestBody UpdatePasswordRequest request) {
         authenticationService.updatePassword(request);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 }

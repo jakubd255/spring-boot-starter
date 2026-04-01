@@ -50,7 +50,7 @@ public class AuthenticationService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setActive(true);
             userService.save(user);
-            tokenService.deleteAllByUserId(user.getId());
+            tokenService.deleteByUserId(user.getId());
         }
 
         Token token = tokenService.createEmailToken(user);
@@ -70,7 +70,7 @@ public class AuthenticationService {
             throw new EmailUnverifiedException("Email not verified");
         }
 
-        return sessionService.create(user, userAgent).getId().toString();
+        return sessionService.create(user, userAgent).getToken();
     }
 
     public Optional<String> verifyEmail(String code, String userAgent) {
@@ -92,7 +92,7 @@ public class AuthenticationService {
 
         if(firstVerification) {
             Session session = sessionService.create(user, userAgent);
-            return Optional.of(session.getId().toString());
+            return Optional.of(session.getToken());
         }
 
         return Optional.empty();
@@ -119,7 +119,7 @@ public class AuthenticationService {
             if(existingUser.getId().equals(authUser.getId())) {
                 authUser.setPendingEmail(null);
                 userService.save(authUser);
-                tokenService.deleteAllByUserId(authUser.getId());
+                tokenService.deleteByUserId(authUser.getId());
                 return;
             }
 
@@ -129,7 +129,7 @@ public class AuthenticationService {
             }
 
             //Delete unverified user
-            tokenService.deleteAllByUserId(existingUser.getId());
+            tokenService.deleteByUserId(existingUser.getId());
             userService.delete(existingUser);
         }
 
@@ -137,7 +137,7 @@ public class AuthenticationService {
         authUser.setPendingEmail(request.getEmail());
         userService.save(authUser);
 
-        tokenService.deleteAllByUserId(authUser.getId());
+        tokenService.deleteByUserId(authUser.getId());
         Token token = tokenService.createEmailToken(authUser);
 
         emailSender.sendVerificationEmail(request.getEmail(), token.getCode());
@@ -150,8 +150,8 @@ public class AuthenticationService {
 
         User user = existingUserOpt.get();
 
-        tokenService.deleteAllByUserId(user.getId());
-        sessionService.deleteAllByUserId(user.getId());
+        tokenService.deleteByUserId(user.getId());
+        sessionService.deleteByUserId(user.getId());
 
         Token token = tokenService.createPasswordToken(user);
         emailSender.sendResetPassword(user.getEmail(), token.getCode());

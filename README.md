@@ -97,6 +97,20 @@ Additionally, it is possible to upload and download files.
 - Delete user by id
 - Requires authentication and ADMIN role
 
+### GET: /api/sessions/users/:userId
+- Get user's sessions by user id
+- Requires authentication
+- Admin or owner can get
+
+### DELETE: /api/sessions/:id
+- Delete session by id
+- Requires authentication
+- Admin or owner can delete
+
+### DELETE: /api/sessions/users/:userId
+- Delete user's sessions by user id
+- Requires authentication and ADMIN role
+
 ### POST: /api/files/upload
 - multipart/form-data, *file* key
 - Upload file
